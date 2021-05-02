@@ -1,3 +1,6 @@
+# MacOS
+.DS_Store/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -76,6 +79,9 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+
+# PyCharm
+.idea/
 
 # IPython
 profile_default/

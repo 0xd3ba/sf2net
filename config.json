@@ -1,0 +1,78 @@
+{
+  "dataset": {
+    "root_dir": "data/",
+    "train_dir": "train/",
+    "val_dir": "validation/",
+    "test_dir": "test/",
+    "enhanced_dir": "enhanced/"
+  },
+
+  "models": {
+
+    "ann": {
+      "output_dim": 1,
+      "n_hidden": 2,
+      "units": [32, 64],
+      "hidden_activations": ["ReLU", "ReLU"],
+      "output_activation": "sigmoid",
+      "dropout": 0,
+      "batch_norm": false
+    },
+
+    "lstm": {
+      "n_recurrent": 2,
+      "hidden_size": 32,
+      "dropout": 0,
+      "bidirectional": true,
+      "attention": true
+    },
+
+    "gru": {
+      "n_recurrent": 2,
+      "hidden_size": 32,
+      "dropout": 0,
+      "bidirectional": true,
+      "attention": true
+    },
+
+    "reinforce": {
+      "output_dim": 2,
+      "output_activation": "None",
+      "discount": 1
+    },
+
+    "ddqn": {
+      "output_dim": 2,
+      "output_activation": "None",
+      "replay_buffer_size": 50000,
+      "update_steps": 2000,
+      "discount": 1
+    }
+  },
+
+  "optimizer": {
+    "type": "Adam",
+    "args": {
+      "lr": 0.001,
+      "weight_decay": 0
+    }
+  },
+
+  "lr_scheduler": {
+    "type": "StepLR",
+    "args": {
+      "step_size": 50,
+      "gamma": 0.1
+    }
+  },
+
+  "trainer": {
+    "epochs": 200,
+
+    "save_dir": "pretrained/",
+    "save_period": 2,
+
+    "tensorboard": true,
+    "log_dir": "logs/"
+  }
+}
