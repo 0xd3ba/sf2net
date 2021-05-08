@@ -5,17 +5,21 @@ import torch.nn as nn
 class ANN(nn.Module):
     """ Class for feed-forward ANN """
 
-    def __init__(self, ip_dim, op_dim, n_hidden, units_list):
+    # Note:
+    #     ann_params is included here as well to make the interface uniform
+    #     It is not used in this class
+
+    def __init__(self, input_dim, output_dim, n_hidden, units_list, ann_params=None):
         super().__init__()
 
         assert n_hidden == len(units_list), "Number of units doesn't match the number of hidden layers"
 
-        self.ip_dim = ip_dim
-        self.op_dim = op_dim
+        self.ip_dim = input_dim
+        self.op_dim = output_dim
         self.activation = nn.ReLU   # Change this depending on needs
 
         layers_list = []
-        curr_dim = ip_dim
+        curr_dim = input_dim
 
         # Now prepare the layers
         for next_dim in units_list:
@@ -29,7 +33,7 @@ class ANN(nn.Module):
 
         # Now we need to prepare the output layer
         # No need to set any activation for it, the caller will do it
-        layer_i = nn.Linear(curr_dim, op_dim)
+        layer_i = nn.Linear(curr_dim, output_dim)
         layers_list.append(layer_i)
 
         # Now build the model and save it

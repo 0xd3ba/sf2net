@@ -10,7 +10,7 @@
   },
 
   "transform": {
-    "type": "MelSpectrogram",
+    "class": "MelSpectrogram",
     "args": {
       "n_fft": 256,
       "hop_length": 128,
@@ -21,42 +21,55 @@
   "models": {
 
     "ann": {
-      "output_dim": 1,
-      "n_hidden": 2,
-      "units_list": [32, 64]
+      "class": "ANN",
+      "args": {
+        "output_dim": 1,
+        "n_hidden": 2,
+        "units_list": [32, 64]
+      }
     },
 
     "lstm": {
-      "n_recurrent": 2,
-      "hidden_size": 32,
-      "dropout": 0,
-      "bidirectional": true,
-      "attention": true
+      "class": "LSTM",
+      "args": {
+        "n_recurrent": 2,
+        "hidden_size": 32,
+        "dropout": 0,
+        "bidirectional": true
+      }
     },
 
     "gru": {
-      "n_recurrent": 2,
-      "hidden_size": 32,
-      "dropout": 0,
-      "bidirectional": true,
-      "attention": true
+      "class": "GRU",
+      "args": {
+        "n_recurrent": 2,
+        "hidden_size": 32,
+        "dropout": 0,
+        "bidirectional": true
+      }
     },
 
     "reinforce": {
-      "output_dim": 1,
-      "discount": 1
+      "class": "REINFORCE",
+      "args": {
+        "output_dim": 1,
+        "discount": 1
+      }
     },
 
-    "ddqn": {
-      "output_dim": 2,
-      "replay_buffer_size": 50000,
-      "update_steps": 2000,
-      "discount": 1
+    "dqn": {
+      "class": "DQN",
+      "args": {
+        "output_dim": 2,
+        "replay_buffer_size": 50000,
+        "update_steps": 2000,
+        "discount": 1
+      }
     }
   },
 
   "optimizer": {
-    "type": "Adam",
+    "class": "Adam",
     "args": {
       "lr": 0.001,
       "weight_decay": 0
@@ -64,7 +77,7 @@
   },
 
   "lr_scheduler": {
-    "type": "StepLR",
+    "class": "StepLR",
     "args": {
       "step_size": 50,
       "gamma": 0.1
