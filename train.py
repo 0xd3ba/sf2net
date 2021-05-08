@@ -75,9 +75,10 @@ class Trainer:
                 # Check if are ready to checkpoint the model
                 # TODO: Checkpoint the model
                 if epoch % self.model_chkpt_interval == 0:
-                    self._checkpoint_model()
+                    self._checkpoint_model(epoch)
 
             print(f'Training Loss: {train_loss}')
+            print()
 
     def _validate(self):
         """ Performs a validation on the validation data """
@@ -89,6 +90,7 @@ class Trainer:
             val_loss += self.model.evaluate(val_x, val_y)
 
         print(f'Validation Loss: {val_loss}')
+        print()
 
     def _checkpoint_model(self, epoch):
         """ Checkpoints the model into the save directory """

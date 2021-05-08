@@ -51,7 +51,7 @@ fi
 if [ ! -d "$LOG_DIR" ]; then
   mkdir $LOG_DIR
 else
-  rm -rf ./"$LOG_DIR"/
+  rm -rf ./"$LOG_DIR"/*
 fi
 
 # Everything is ready. Start !
