@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import models.base
 
 
 class ANN(nn.Module):

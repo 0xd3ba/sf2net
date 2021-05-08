@@ -3,7 +3,8 @@ import torch
 import torchaudio.transforms
 from data_loader.ms_snsd import MS_SNSD
 from utils import parse_config
-from utils import model_factory
+from utils import factory
+from train import Trainer
 
 ARGS_MODE_TRAIN = 'train'
 ARGS_MODE_TEST  = 'test'
@@ -24,33 +25,32 @@ def start(config, model, start_mode, device):
     transform = getattr(torchaudio.transforms, config.get_data_transform_type())
     transform = transform(**config.get_data_transform_args())
 
-    # ******************************************************************************
+    # *******************************************************************************
     # Input features to the model is the following (from torchaudio's documentation)
     # This may need changes depending on the transformation being applied
     # Basically, the output of the transform is of shape (..., features_dim, time)
     # We need the features_dim to be our input shape.
-    # Could not find a way to generalize this, so need to manually change depending
-    # on the transform
+    # Could not find a nice and a clean way to generalize this, so need to manually
+    # change depending on the transform
     ip_dim = transform.n_mels
-    # ******************************************************************************
-
-    train_dataset = None
-    val_dataset = None
-    test_dataset = None
+    # *******************************************************************************
 
     # Prepare the dataset accordingly
-    # NOTE: Because of our approach, PyTorch's dataloaders introduces complications. So not using it
+    # NOTE: Because of our approach, PyTorch's data-loaders introduces complications. So not using it
     if start_mode == ARGS_MODE_TEST:
         test_dataset = MS_SNSD(**dataset_params, dataset_type=MS_SNSD.dataset_test)
+
+    # ================================ TRAINING MODE ================================
     else:
         train_dataset = MS_SNSD(**dataset_params, dataset_type=MS_SNSD.dataset_train)
         val_dataset = MS_SNSD(**dataset_params, dataset_type=MS_SNSD.dataset_val)
 
-    # Build the model
-    model = model_factory.build(model_key=config.get_model_key(),
-                                model_params=config.get_model_params(),
-                                ann_params=config.get_ann_params(),
-                                ip_dim=ip_dim)
+        model = factory.build(ip_dim, config, device)
+        trainer = Trainer(train_dataset=train_dataset,
+                          validation_dataset=val_dataset,
+                          model=model,
+                          **config.get_trainer_params())
+        trainer.start()
 
 
 if __name__ == '__main__':
