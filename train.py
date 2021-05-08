@@ -1,4 +1,5 @@
-import numpy as np
+import os
+import pickle
 import torch
 from tqdm import tqdm
 from utils import preprocess
@@ -62,11 +63,19 @@ class Trainer:
 
                 # We need to do a validation now
                 if epoch % self.validation_interval == 0:
-                    self._validate()
+                    # self._validate()
+                    # TODO: Uncomment the above line once validation has been implemented
+                    pass
 
                 # Check if we need to log, if yes, then write the logs to tensorboard
+                # TODO: Implement the methods to log the statistics
                 if self.use_tensorboard:
                     self.model.log(self.tensorboard_log_dir)
+
+                # Check if are ready to checkpoint the model
+                # TODO: Checkpoint the model
+                if epoch % self.model_chkpt_interval == 0:
+                    self._checkpoint_model()
 
             print(f'Training Loss: {train_loss}')
 
@@ -80,3 +89,11 @@ class Trainer:
             val_loss += self.model.evaluate(val_x, val_y)
 
         print(f'Validation Loss: {val_loss}')
+
+    def _checkpoint_model(self, epoch):
+        """ Checkpoints the model into the save directory """
+        file_name = f'model_epoch_{epoch}.pkl'
+        file_path = os.path.join(self.model_chkpt_dir, file_name)
+
+        with open(file_path, 'wb') as file:
+            pickle.dump(self.model, file)

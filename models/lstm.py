@@ -1,5 +1,5 @@
+import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import models.ann
 
 
@@ -33,9 +33,9 @@ class LSTM(nn.Module):
 
     def forward(self, X):
         # input shape: (batch, seq_len, n_features)
-        lstm_output, _ = self.lstm(X)        # Shape: (batch, seq_len, hidden_size(*2 if bidirectional))
-        ann_output = self.ann(lstm_output)   # Shape: (batch, seq_len, 1)
-        frame_probs = F.sigmoid(ann_output)  # Shape: (batch, seq_len, 1)
+        lstm_output, _ = self.lstm(X)            # Shape: (batch, seq_len, hidden_size(*2 if bidirectional))
+        ann_output = self.ann(lstm_output)       # Shape: (batch, seq_len, 1)
+        frame_probs = torch.sigmoid(ann_output)  # Shape: (batch, seq_len, 1)
 
         # The outputs indicate the probability of each frame requiring enhancement
         # for each audio file in the batch

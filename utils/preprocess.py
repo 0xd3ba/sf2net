@@ -27,9 +27,9 @@ class PreprocessAudio:
         # Now prepare the targets
         # A frame needs enhancement if
         #       |SNR(clean_frame) - SNR(noise_frame)| > threshold
-        targets = torch.where(snr_diff > self.threshold, 1, 0)
+        targets = torch.where(snr_diff > self.threshold, 1.0, 0.0)
 
         # Now transform the inputs, i.e. the noisy tensors
-        noisy_transformed = self.transform_func(noisy_unfolded)
+        noisy_transformed = self.transform_func(noisy_unfolded).squeeze(-1)
 
         return noisy_transformed, targets

@@ -96,7 +96,7 @@
     "save_dir": "pretrained/",
     "save_period": 2,
 
-    "tensorboard": true,
+    "tensorboard": false,
     "log_dir": "logs/"
   }
 }
