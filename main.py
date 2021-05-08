@@ -7,8 +7,8 @@ from utils import factory
 from train import Trainer
 
 ARGS_MODE_TRAIN = 'train'
-ARGS_MODE_TEST  = 'test'
-
+ARGS_MODE_TEST = 'test'
+SNR_DIFF_THRESHOLD = 1.0
 
 def validate_args(args):
     """ Validates the user supplied arguments """
@@ -49,6 +49,8 @@ def start(config, model, start_mode, device):
         trainer = Trainer(train_dataset=train_dataset,
                           validation_dataset=val_dataset,
                           model=model,
+                          transform=transform,
+                          threshold=SNR_DIFF_THRESHOLD,
                           **config.get_trainer_params())
         trainer.start()
 

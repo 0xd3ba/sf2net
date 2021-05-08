@@ -3,14 +3,14 @@ import models.base
 
 
 class LSTM_Wrapper(models.base.BaseModel):
-    """ Wrapper class for ANN model """
+    """ Wrapper class for LSTM model """
 
     def __init__(self, model, optimizer, lr_scheduler, device):
         super().__init__(model, optimizer, lr_scheduler, device)
 
-    def train(self, batch_noisy, batch_clean):
+    def train(self, data, target):
         """ Trains the model after feeding in the batch """
-        pass
+        return 0
 
     def evaluate(self, noisy_samples, clean_samples):
         """ Performs a validation on the given dataset """

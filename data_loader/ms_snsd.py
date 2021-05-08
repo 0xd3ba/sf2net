@@ -112,8 +112,12 @@ class MS_SNSD(Dataset):
 
         if self.loader_type == self.dataset_test:
             enhanced_wav, _ = torchaudio.load(sample.enhanced_file)
+            enhanced_wav = enhanced_wav[0]
 
         # The tensors are of shape (channel_num, samples)
         # We are dealing with single channel wav files, so the first dimension is of no use
-        return clean_wav[0], noisy_wav[0], enhanced_wav[0]
+        clean_wav = clean_wav[0]
+        noisy_wav = noisy_wav[0]
+
+        return clean_wav, noisy_wav, enhanced_wav
 

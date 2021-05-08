@@ -3,7 +3,7 @@ import models.base
 
 
 class GRU_Wrapper(models.base.BaseModel):
-    """ Wrapper class for ANN model """
+    """ Wrapper class for GRU model """
 
     def __init__(self, model, optimizer, lr_scheduler, device):
         super().__init__(model, optimizer, lr_scheduler, device)
