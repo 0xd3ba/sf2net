@@ -9,7 +9,7 @@ import torchaudio
 dataset_item = namedtuple("dataset_item", ['clean_file', 'noisy_file', 'enhanced_file'])
 
 
-def _build_walker(clean_path, noisy_path, enhanced_path):
+def _build_walker(clean_path, noisy_path, enhanced_path, walker_for):
     """
     Prepares a list of form: [(clean_sample, noisy_sample, enhanced_sample), ...]
     This method might need changes depending on how the enhancer names the files.
@@ -19,10 +19,10 @@ def _build_walker(clean_path, noisy_path, enhanced_path):
         - Enhanced outputs produced by Facebook-Research's denoiser (https://github.com/facebookresearch/denoiser)
     """
 
-    return _denoiser_walker(clean_path, noisy_path, enhanced_path)
+    return _denoiser_walker(clean_path, noisy_path, enhanced_path, walker_for)
 
 
-def _denoiser_walker(clean_path, noisy_path, enhanced_path):
+def _denoiser_walker(clean_path, noisy_path, enhanced_path, walker_for):
     """
     File name format of
         - Clean sample:     clnsp<id>.wav
@@ -44,7 +44,12 @@ def _denoiser_walker(clean_path, noisy_path, enhanced_path):
 
         # We can be sure that the ordering is maintained if we sort the files
         noisy_files = sorted(noisy_files)
-        enhanced_files = sorted(enhanced_files)
+
+        if walker_for == MS_SNSD.dataset_train:
+            enhanced_files = [None] * len(noisy_files)  # Doing this because the enhanced directory might be empty
+        else:
+            assert len(enhanced_files) == len(noisy_files), "No. of enhanced files must be equal to no. of noisy files"
+            enhanced_files = sorted(enhanced_files)
 
         for nf, ef in zip(noisy_files, enhanced_files):
             entry = dataset_item(clean_file=cf,
@@ -93,7 +98,7 @@ class MS_SNSD(Dataset):
         self.enhanced_path = self._dataset_dir / enhanced_dir
 
         # Build the mapping between the audio files
-        self._walker = _build_walker(self._clean_path, self._noisy_path, self.enhanced_path)
+        self._walker = _build_walker(self._clean_path, self._noisy_path, self.enhanced_path, self.loader_type)
 
     def __len__(self):
         return len(self._walker)
