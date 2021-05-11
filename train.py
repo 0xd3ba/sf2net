@@ -49,6 +49,12 @@ class Trainer:
             train_loss = 0
 
             for clean_t, noisy_t, _ in tqdm(train_data, desc=f'[{epoch}/{self.epochs}][TRAIN] Samples processed'):
+
+                # Sometimes, what it happens is that the wav file turns out to be corrupt and could not be read
+                # So in such cases, we need to skip it. The dataset class takes care of printing an error message
+                if clean_t is None or noisy_t is None:
+                    continue
+
                 # We'll be training our model for every sample, not in a batch
                 # because of varying number of frames in different files -- introduces complications
                 # but this doesn't cause much of an issue because:
@@ -58,6 +64,7 @@ class Trainer:
                 #
                 # Depending on the model, train_x's n_frames can be treated as a batch (IID assumption)
                 # or an episode (for RL models) or (very long) sequence for RNNs
+
                 train_x, train_y, snr_diffs = self.prepare_data.preprocess(clean_tensor=clean_t, noisy_tensor=noisy_t)
                 train_loss += self.model.train(train_x, train_y, snr_diffs)
 

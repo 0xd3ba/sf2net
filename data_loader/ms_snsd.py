@@ -106,18 +106,26 @@ class MS_SNSD(Dataset):
         During testing, we need it however
         """
         sample = self._walker[index]
-        clean_wav, _ = torchaudio.load(sample.clean_file)
-        noisy_wav, _ = torchaudio.load(sample.noisy_file)
+        clean_wav = None
+        noisy_wav = None
         enhanced_wav = None
 
-        if self.loader_type == self.dataset_test:
-            enhanced_wav, _ = torchaudio.load(sample.enhanced_file)
-            enhanced_wav = enhanced_wav[0]
-
-        # The tensors are of shape (channel_num, samples)
+        # The loaded tensors are of shape (channel_num, samples)
         # We are dealing with single channel wav files, so the first dimension is of no use
-        clean_wav = clean_wav[0]
-        noisy_wav = noisy_wav[0]
+        try:
+            clean_wav, _ = torchaudio.load(sample.clean_file)
+            noisy_wav, _ = torchaudio.load(sample.noisy_file)
+            clean_wav = clean_wav[0]
+            noisy_wav = noisy_wav[0]
+        except Exception as e:
+            print(f'WARNING: Error while loading either of "{str(sample.clean_file)}/{str(sample.noisy_file)}"')
+
+        if self.loader_type == self.dataset_test:
+            try:
+                enhanced_wav, _ = torchaudio.load(sample.enhanced_file)
+                enhanced_wav = enhanced_wav[0]
+            except:
+                print(f'WARNING: Error while loading either of "{str(sample.enhanced_file)}"')
 
         return clean_wav, noisy_wav, enhanced_wav
 
