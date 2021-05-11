@@ -12,11 +12,11 @@ ARGS_MODE_TEST = 'test'
 # *******************************************************************************
 # This value will be used to compute the ground-truth labels
 # Basically, if
-#       |SNR(clean_frame) - SNR(noisy_frame)| > SNR_DIFF_THRESHOLD
+#       |transform(clean_frame) - transform(noisy_frame)| > TRANSFORM_DIFF_THRESHOLD
 #
 # Then the frame will need enhancement
-SNR_DIFF_THRESHOLD = 1.0
-# ********************************
+TRANSFORM_DIFF_THRESHOLD = 5.0
+# *******************************************************************************
 
 
 def validate_args(args):
@@ -56,7 +56,7 @@ def start(config, model, start_mode, model_path, device):
         tester = Tester(test_dataset=test_dataset,
                         model_path=model_path,
                         transform=transform,
-                        threshold=SNR_DIFF_THRESHOLD,
+                        threshold=TRANSFORM_DIFF_THRESHOLD,
                         **config.get_tester_params())
         tester.start()
 
@@ -70,7 +70,7 @@ def start(config, model, start_mode, model_path, device):
                           validation_dataset=val_dataset,
                           model=model,
                           transform=transform,
-                          threshold=SNR_DIFF_THRESHOLD,
+                          threshold=TRANSFORM_DIFF_THRESHOLD,
                           **config.get_trainer_params())
         trainer.start()
 

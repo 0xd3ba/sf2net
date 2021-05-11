@@ -10,7 +10,7 @@ class REINFORCE_Wrapper(models.base.BaseModel):
     def __init__(self, model, optimizer, lr_scheduler, device):
         super().__init__(model, optimizer, lr_scheduler, device)
 
-    def train(self, data, target, snr_diff=None):
+    def train(self, data, target, frame_diff=None):
         """
         Trains the model after feeding in the batch
 
@@ -20,14 +20,14 @@ class REINFORCE_Wrapper(models.base.BaseModel):
 
         data = data.to(self.device)
         target = target.to(self.device)
-        snr_diff = snr_diff.to(self.device)
+        frame_diff = frame_diff.to(self.device)
 
         # Reward function is
         #   0:                   When correct action is taken
-        #   -1 * abs(snr_diff):  When incorrect action is taken
+        #   -1 * abs(frame_diff):  When incorrect action is taken
         #
         # Kind of different way to do things, eh
-        rewards = -snr_diff  # snr_diff only contains absolute values (see utils/preprocess.py)
+        rewards = -frame_diff  # frame_diff only contains absolute values (see utils/preprocess.py)
 
         action_scores = self.model(data)  # Assumes each frame is an observation
         action_probs = F.softmax(action_scores, dim=-1)  # The probability of taking each action

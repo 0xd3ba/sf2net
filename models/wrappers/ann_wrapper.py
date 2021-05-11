@@ -10,7 +10,7 @@ class ANN_Wrapper(models.base.BaseModel):
         super().__init__(model, optimizer, lr_scheduler, device)
         self.loss_fn = F.binary_cross_entropy
 
-    def train(self, data, target, snr_diff=None):
+    def train(self, data, target, frame_diff=None):
         """
         Trains the model after feeding in the batch
 

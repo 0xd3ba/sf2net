@@ -5,12 +5,11 @@ import torch
 class PreprocessAudio:
     """ Preprocessing class for preparing the data for training """
 
-    def __init__(self, window_len, stride_len, threshold, transform_func, snr_func):
+    def __init__(self, window_len, stride_len, threshold, transform_func):
         self.window_len = window_len
         self.stride_len = stride_len
         self.threshold = threshold
         self.transform_func = transform_func
-        self.snr_func = snr_func
 
     def preprocess(self, clean_tensor, noisy_tensor):
         """ Splits the tensors into frames and computes the targets using SNR estimator """
@@ -20,19 +19,18 @@ class PreprocessAudio:
         clean_unfolded = self.chunk_it(clean_tensor)
         noisy_unfolded = self.chunk_it(noisy_tensor)
 
-        clean_snrs = self.snr_func(clean_unfolded)
-        noisy_snrs = self.snr_func(noisy_unfolded)
-        snr_diff = torch.abs(clean_snrs - noisy_snrs)
-
-        # Now prepare the targets
-        # A frame needs enhancement if
-        #       |SNR(clean_frame) - SNR(noise_frame)| > threshold
-        targets = torch.where(snr_diff > self.threshold, 1.0, 0.0)
-
-        # Now transform the inputs, i.e. the noisy tensors
+        # Now transform the tensors
         noisy_transformed = self.transform_func(noisy_unfolded).squeeze(-1)
+        clean_transformed = self.transform_func(clean_unfolded).squeeze(-1)
 
-        return noisy_transformed, targets, snr_diff
+        # Compute the distance between the transformed tensors
+        transform_diff = (clean_transformed - noisy_transformed).norm(p=2, dim=-1)
+
+        # The frames need enhancement if
+        #   Distance(transformed_clean_frame, transformed_noise_frame) > threshold
+        targets = torch.where(transform_diff < self.threshold, 0.0, 1.0)
+
+        return noisy_transformed, targets, transform_diff
 
     def chunk_it(self, wav_tensor):
         """ Chunks the audio into frames of fixed length with fixed stride """

@@ -16,12 +16,12 @@ class BaseModel:
 
         self.model.to(self.device)
 
-    def train(self, data, target, snr_diff=None):
+    def train(self, data, target, frame_diff=None):
         """ Trains the model after feeding in the batch
         """
         raise NotImplementedError
 
-    def evaluate(self, data, target, snr_diff=None):
+    def evaluate(self, data, target, frame_diff=None):
         """ Performs a validation on the given dataset
         """
         target = target.to(self.device)

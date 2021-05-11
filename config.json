@@ -10,11 +10,13 @@
   },
 
   "transform": {
-    "class": "MelSpectrogram",
+    "class": "MFCC",
     "args": {
-      "n_fft": 256,
-      "hop_length": 128,
-      "center": false
+      "melkwargs": {
+        "n_fft": 256,
+        "hop_length": 128,
+        "center": false
+      }
     }
   },
 
@@ -57,17 +59,6 @@
       "wrapper": "REINFORCE_Wrapper",
       "args": {
       }
-    },
-
-    "dqn": {
-      "class": "DQN",
-      "wrapper": "DQN_Wrapper",
-      "args": {
-        "replay_buffer_size": 50000,
-        "replay_batch_size": 128,
-        "update_steps": 2000,
-        "exploration_decay": 0.99
-      }
     }
   },
 
@@ -96,5 +87,9 @@
 
     "tensorboard": false,
     "log_dir": "logs/"
+  },
+
+  "tester": {
+    "output_dir": "results/"
   }
 }
