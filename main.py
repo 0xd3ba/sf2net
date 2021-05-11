@@ -8,7 +8,14 @@ from train import Trainer
 
 ARGS_MODE_TRAIN = 'train'
 ARGS_MODE_TEST = 'test'
+# *******************************************************************************
+# This value will be used to compute the ground-truth labels
+# Basically, if
+#       |SNR(clean_frame) - SNR(noisy_frame)| > SNR_DIFF_THRESHOLD
+#
+# Then the frame will need enhancement
 SNR_DIFF_THRESHOLD = 1.0
+# *******************************************************************************
 
 def validate_args(args):
     """ Validates the user supplied arguments """

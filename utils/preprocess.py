@@ -32,4 +32,4 @@ class PreprocessAudio:
         # Now transform the inputs, i.e. the noisy tensors
         noisy_transformed = self.transform_func(noisy_unfolded).squeeze(-1)
 
-        return noisy_transformed, targets
+        return noisy_transformed, targets, snr_diff

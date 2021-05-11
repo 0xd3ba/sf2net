@@ -58,38 +58,38 @@ class Trainer:
                 #
                 # Depending on the model, train_x's n_frames can be treated as a batch (IID assumption)
                 # or an episode (for RL models) or (very long) sequence for RNNs
-                train_x, train_y = self.prepare_data.preprocess(clean_tensor=clean_t, noisy_tensor=noisy_t)
-                train_loss += self.model.train(train_x, train_y)
+                train_x, train_y, snr_diffs = self.prepare_data.preprocess(clean_tensor=clean_t, noisy_tensor=noisy_t)
+                train_loss += self.model.train(train_x, train_y, snr_diffs)
 
-                # We need to do a validation now
-                if epoch % self.validation_interval == 0:
-                    # self._validate()
-                    # TODO: Uncomment the above line once validation has been implemented
-                    pass
+            # We need to do a validation now
+            if epoch % self.validation_interval == 0:
+                self._validate()
 
-                # Check if we need to log, if yes, then write the logs to tensorboard
-                # TODO: Implement the methods to log the statistics
-                if self.use_tensorboard:
-                    self.model.log(self.tensorboard_log_dir)
+            # Check if we need to log, if yes, then write the logs to tensorboard
+            # TODO: Implement the methods to log the statistics
+            if self.use_tensorboard:
+                self.model.log(self.tensorboard_log_dir)
 
-                # Check if are ready to checkpoint the model
-                # TODO: Checkpoint the model
-                if epoch % self.model_chkpt_interval == 0:
-                    self._checkpoint_model(epoch)
+            # Check if are ready to checkpoint the model
+            if epoch % self.model_chkpt_interval == 0:
+                self._checkpoint_model(epoch)
 
             print(f'Training Loss: {train_loss}')
             print()
 
     def _validate(self):
         """ Performs a validation on the validation data """
-        val_data = self.validation_dataset
-        val_loss = 0
+        val_data = self.train_dataset
+        val_acc = 0
+        n_samples = 0
 
         for clean_t, noisy_t, _ in tqdm(val_data, desc='[VALIDATION] Samples processed'):
-            val_x, val_y = self.prepare_data.preprocess(clean_tensor=clean_t, noisy_tensor=noisy_t)
-            val_loss += self.model.evaluate(val_x, val_y)
+            val_x, val_y, snr_diff = self.prepare_data.preprocess(clean_tensor=clean_t, noisy_tensor=noisy_t)
+            val_acc += self.model.evaluate(val_x, val_y, snr_diff)
+            n_samples += 1
 
-        print(f'Validation Loss: {val_loss}')
+        print()
+        print(f'Validation Accuracy: {val_acc / n_samples}')
         print()
 
     def _checkpoint_model(self, epoch):

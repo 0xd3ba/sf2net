@@ -10,13 +10,16 @@ class ANN_Wrapper(models.base.BaseModel):
         super().__init__(model, optimizer, lr_scheduler, device)
         self.loss_fn = F.binary_cross_entropy
 
-    def train(self, data, target):
+    def train(self, data, target, snr_diff=None):
         """
         Trains the model after feeding in the batch
 
         Input shape:  (n_frames, n_features)
         Target shape: (n_frames, )
         """
+        data = data.to(self.device)
+        target = target.to(self.device)
+
         output_scores = self.model(data).squeeze(-1)  # Assumes data is I.I.D
         output_probs = torch.sigmoid(output_scores)
 
@@ -25,20 +28,22 @@ class ANN_Wrapper(models.base.BaseModel):
         loss.backward()
         self.optimizer.step()
 
-        return loss
-
-    def evaluate(self, noisy_samples, clean_samples):
-        """ Performs a validation on the given dataset """
-        pass
+        return loss.cpu().item()
 
     def log(self, log_dir):
         """ Saves the training logs if tensorboard monitoring is enabled """
         pass
 
-    def predict(self, noisy_samples):
+    def predict(self, data):
         """
         Predicts the frames of every audio sample as 0 or 1
             0: Frame doesn't require enhancement
             1: Frame requires enhancement
         """
-        pass
+        data = data.to(self.device)
+        with torch.no_grad():
+            output_scores = self.model(data).squeeze(-1)  # Assumes data is I.I.D
+            output_probs = torch.sigmoid(output_scores)
+            pred_labels = torch.where(output_probs >= 0.5, 1, 0)
+
+        return pred_labels.cpu()
