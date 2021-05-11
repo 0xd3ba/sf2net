@@ -36,6 +36,7 @@
       "class": "LSTM",
       "wrapper": "LSTM_Wrapper",
       "args": {
+        "sequence_length": 4,
         "n_recurrent": 2,
         "hidden_size": 32,
         "dropout": 0,
@@ -47,6 +48,7 @@
       "class": "GRU",
       "wrapper": "GRU_Wrapper",
       "args": {
+        "sequence_length": 4,
         "n_recurrent": 2,
         "hidden_size": 32,
         "dropout": 0,

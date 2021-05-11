@@ -8,6 +8,7 @@ class LSTM(nn.Module):
 
     def __init__(self,
                  input_dim,         # Number of input features
+                 sequence_length,   # The length of the input sequence
                  n_recurrent,       # Number of recurrent layers
                  hidden_size,       # Number of units in hidden state
                  dropout,           # Dropout probability
@@ -19,6 +20,7 @@ class LSTM(nn.Module):
         self.hidden_size = hidden_size
         self.dropout = dropout
         self.bidirectional = bidirectional
+        self.sequence_length = sequence_length
 
         self.lstm = nn.LSTM(input_size=input_dim,
                             hidden_size=hidden_size,
@@ -34,8 +36,13 @@ class LSTM(nn.Module):
     def forward(self, X):
         # input shape: (batch, seq_len, n_features)
         lstm_output, _ = self.lstm(X)            # Shape: (batch, seq_len, hidden_size(*2 if bidirectional))
-        ann_output = self.ann(lstm_output)       # Shape: (batch, seq_len, 1)
-        frame_probs = torch.sigmoid(ann_output)  # Shape: (batch, seq_len, 1)
+
+        # All batches, all features, but only of the last time-step
+        # Shape: (batch, hidden_dims)
+        ann_input = lstm_output[:, -1, :]
+
+        ann_output = self.ann(ann_input)         # Shape: (batch, hidden_dims)
+        frame_probs = torch.sigmoid(ann_output)  # Shape: (batch, 1)
 
         # The outputs indicate the probability of each frame requiring enhancement
         # for each audio file in the batch

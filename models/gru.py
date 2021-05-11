@@ -1,5 +1,5 @@
+import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import models.ann
 
 
@@ -8,6 +8,7 @@ class GRU(nn.Module):
 
     def __init__(self,
                  input_dim,         # Number of input features
+                 sequence_length,   # The length of the input sequence
                  n_recurrent,       # Number of recurrent layers
                  hidden_size,       # Number of units in hidden state
                  dropout,           # Dropout probability
@@ -19,6 +20,7 @@ class GRU(nn.Module):
         self.hidden_size = hidden_size
         self.dropout = dropout
         self.bidirectional = bidirectional
+        self.sequence_length = sequence_length
 
         self.gru = nn.GRU(input_size=input_dim,
                           hidden_size=hidden_size,
@@ -33,9 +35,14 @@ class GRU(nn.Module):
 
     def forward(self, X):
         # input shape: (batch, seq_len, n_features)
-        gru_output, _ = self.gru(X)          # Shape: (batch, seq_len, hidden_size(*2 if bidirectional))
-        ann_output = self.ann(gru_output)    # Shape: (batch, seq_len, 1)
-        frame_probs = F.sigmoid(ann_output)  # Shape: (batch, seq_len, 1)
+        gru_output, _ = self.gru(X)  # Shape: (batch, seq_len, hidden_size(*2 if bidirectional))
+
+        # All batches, all features, but only of the last time-step
+        # Shape: (batch, hidden_dims)
+        ann_input = gru_output[:, -1, :]
+
+        ann_output = self.ann(ann_input)  # Shape: (batch, hidden_dims)
+        frame_probs = torch.sigmoid(ann_output)  # Shape: (batch, 1)
 
         # The outputs indicate the probability of each frame requiring enhancement
         # for each audio file in the batch

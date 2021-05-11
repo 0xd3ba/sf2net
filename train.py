@@ -63,7 +63,6 @@ class Trainer:
                 #
                 # Depending on the model, train_x's n_frames can be treated as a batch (IID assumption)
                 # or an episode (for RL models) or (very long) sequence for RNNs
-
                 train_x, train_y, frame_diffs = self.prepare_data.preprocess(clean_tensor=clean_t, noisy_tensor=noisy_t)
                 train_loss += self.model.train(train_x, train_y, frame_diffs)
 

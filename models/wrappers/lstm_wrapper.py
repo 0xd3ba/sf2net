@@ -17,8 +17,15 @@ class LSTM_Wrapper(models.base.BaseModel):
         Input shape:  (n_frames, n_features)
         Target shape: (n_frames, )
         """
+
+        # Split into batches for efficiency, without loosing much information
+        # We can exploit the monotonic property of frames, i.e. they only depend
+        # on only the preceding frame
+        data_new = self._prepare_batch(data)
+
+        # Now bring them to the GPU, if present
         target = target.to(self.device)
-        data = data.unsqueeze(0).to(self.device)    # Insert batch dimension which is required
+        data = data_new.to(self.device)
 
         output_probs = self.model(data).squeeze(0)  # Remove the batch dimension after getting the output
 
@@ -46,3 +53,27 @@ class LSTM_Wrapper(models.base.BaseModel):
             pred_labels = torch.where(output_probs >= 0.5, 1, 0)
 
         return pred_labels
+
+    def _prepare_batch(self, data):
+        """
+        Prepares the data by breaking into batches. Needed because frames are too much
+        which slows down training tremendously
+        """
+        # Break the data into fixed length sequences of length T, such that
+        # (T-1) frames will serve as the context to last frame (which is what we need)
+        # NOTE: It means that first T-1 frames in the data will need to be padded
+        seq_length = self.model.sequence_length
+        data_new = data.unfold(0, seq_length, 1).permute([0, 2, 1])
+
+        # Now build the padding required for the first few samples (T-1 of them)
+        for i in reversed(range(seq_length - 1)):
+            n_pads = seq_length - i - 1
+            zeros = torch.zeros(n_pads, data.shape[-1])
+            seq_i = torch.vstack([zeros, data[:i + 1]])
+
+            # Need to add a dimension because data_new is of shape (batch, seq_len, n_features)
+            # and seq_i is of shape (seq_len, n_features). Also need to add at the top because
+            # these are the first samples
+            data_new = torch.vstack([seq_i.unsqueeze(0), data_new])
+
+        return data_new
