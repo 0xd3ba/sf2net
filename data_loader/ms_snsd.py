@@ -45,7 +45,7 @@ def _denoiser_walker(clean_path, noisy_path, enhanced_path, walker_for):
         # We can be sure that the ordering is maintained if we sort the files
         noisy_files = sorted(noisy_files)
 
-        if walker_for == MS_SNSD.dataset_train:
+        if walker_for == MS_SNSD.dataset_train or walker_for == MS_SNSD.dataset_val:
             enhanced_files = [None] * len(noisy_files)  # Doing this because the enhanced directory might be empty
         else:
             assert len(enhanced_files) == len(noisy_files), "No. of enhanced files must be equal to no. of noisy files"
