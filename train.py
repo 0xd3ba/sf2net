@@ -34,8 +34,8 @@ class Trainer:
         self.use_tensorboard = tensorboard
         self.tensorboard_log_dir = log_dir
 
-        self.prepare_data = preprocess.PreprocessAudio(window_len=transform.n_fft,
-                                                       stride_len=transform.hop_length,
+        self.prepare_data = preprocess.PreprocessAudio(window_len=256,
+                                                       stride_len=128,
                                                        threshold=threshold,
                                                        transform_func=transform,
                                                        snr_func=snr.wada_snr)
@@ -48,7 +48,7 @@ class Trainer:
 
             train_loss = 0
 
-            for clean_t, noisy_t, _ in tqdm(train_data, desc=f'[{epoch}/{self.epochs}][TRAIN] Samples processed'):
+            for (clean_t, _), (noisy_t, _), _ in tqdm(train_data, desc=f'[{epoch}/{self.epochs}][TRAIN] Samples processed'):
 
                 # Sometimes, what it happens is that the wav file turns out to be corrupt and could not be read
                 # So in such cases, we need to skip it. The dataset class takes care of printing an error message
@@ -90,7 +90,7 @@ class Trainer:
         val_acc = 0
         n_samples = 0
 
-        for clean_t, noisy_t, _ in tqdm(val_data, desc='[VALIDATION] Samples processed'):
+        for (clean_t, _), (noisy_t, _), _ in tqdm(val_data, desc='[VALIDATION] Samples processed'):
             val_x, val_y, snr_diff = self.prepare_data.preprocess(clean_tensor=clean_t, noisy_tensor=noisy_t)
             val_acc += self.model.evaluate(val_x, val_y, snr_diff)
             n_samples += 1

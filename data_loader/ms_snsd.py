@@ -48,8 +48,9 @@ def _denoiser_walker(clean_path, noisy_path, enhanced_path, walker_for):
         if walker_for == MS_SNSD.dataset_train or walker_for == MS_SNSD.dataset_val:
             enhanced_files = [None] * len(noisy_files)  # Doing this because the enhanced directory might be empty
         else:
-            assert len(enhanced_files) == len(noisy_files), "No. of enhanced files must be equal to no. of noisy files"
-            enhanced_files = sorted(enhanced_files)
+            enhanced_files = sorted(enhanced_files)     # Must do this first, else generator gets used up in line below
+            assert len(enhanced_files) == len(noisy_files), \
+                "No. of enhanced files must be equal to no. of noisy files"
 
         for nf, ef in zip(noisy_files, enhanced_files):
             entry = dataset_item(clean_file=cf,
@@ -132,5 +133,9 @@ class MS_SNSD(Dataset):
             except:
                 print(f'WARNING: Error while loading either of "{str(sample.enhanced_file)}"')
 
-        return clean_wav, noisy_wav, enhanced_wav
+        # Returning the name of the file as well -- Especially needed during testing to save
+        # the post-processed files
+        return (clean_wav, sample.clean_file),  \
+               (noisy_wav, sample.noisy_file), \
+               (enhanced_wav, sample.enhanced_file)
 

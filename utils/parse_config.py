@@ -25,6 +25,7 @@ class ConfigParser:
         self.optimizer_params = json_dict['optimizer']          # Save the optimizer information
         self.lr_scheduler_params = json_dict['lr_scheduler']    # Save the learning rate scheduler parameters
         self.trainer_params = json_dict['trainer']              # Save the information about the trainer
+        self.tester_params = json_dict['tester']                # Save the information about the tester
 
     def get_dataset_params(self):
         return self.dataset_params
@@ -61,3 +62,6 @@ class ConfigParser:
 
     def get_trainer_params(self):
         return self.trainer_params
+
+    def get_tester_params(self):
+        return self.tester_params

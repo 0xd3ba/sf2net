@@ -17,8 +17,8 @@ class PreprocessAudio:
 
         # Note that we might miss some values because of stride_len
         # But that will not matter much, as the maximum we can lose is (stride_len-1) samples
-        clean_unfolded = clean_tensor.unfold(0, self.window_len, self.stride_len)
-        noisy_unfolded = noisy_tensor.unfold(0, self.window_len, self.stride_len)
+        clean_unfolded = self.chunk_it(clean_tensor)
+        noisy_unfolded = self.chunk_it(noisy_tensor)
 
         clean_snrs = self.snr_func(clean_unfolded)
         noisy_snrs = self.snr_func(noisy_unfolded)
@@ -33,3 +33,12 @@ class PreprocessAudio:
         noisy_transformed = self.transform_func(noisy_unfolded).squeeze(-1)
 
         return noisy_transformed, targets, snr_diff
+
+    def chunk_it(self, wav_tensor):
+        """ Chunks the audio into frames of fixed length with fixed stride """
+        return wav_tensor.unfold(0, self.window_len, self.stride_len)
+
+    def inverse_chunk_it(self, chunked_wav_tensor):
+        """ Undoes the chunking process to a single wav tensor """
+        # TODO: Write the method later
+        pass
