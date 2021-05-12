@@ -37,7 +37,8 @@ class Trainer:
         self.prepare_data = preprocess.PreprocessAudio(window_len=transform.MelSpectrogram.n_fft,
                                                        stride_len=transform.MelSpectrogram.hop_length,
                                                        threshold=threshold,
-                                                       transform_func=transform)
+                                                       transform_func=transform,
+                                                       device=self.model.device)
 
     def start(self):
         """ Performs the training on the model for given number of epochs """

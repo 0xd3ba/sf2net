@@ -29,14 +29,14 @@ CONFIG_JSON=config.json     # The configuration script holding the information a
 # config.json file. Change the parameters
 # there to instead of tweaking the code
 #------------------------------------------
-MODEL_TO_USE="ann"
+MODEL_TO_USE="lstm"
 
 #------------------------------------------
 # Start the program in which mode ?
 #   - train
 #   - test         (Not supported yet)
 #------------------------------------------
-RUNNING_MODE="test"
+RUNNING_MODE="train"
 
 #------------------------------------------
 # Select the pretrained model to use

@@ -39,11 +39,10 @@ class LSTM(nn.Module):
 
         # All batches, all features, but only of the last time-step
         # Shape: (batch, hidden_dims)
-        ann_input = lstm_output[:, -1, :]
-
-        ann_output = self.ann(ann_input)         # Shape: (batch, hidden_dims)
-        frame_probs = torch.sigmoid(ann_output)  # Shape: (batch, 1)
+        ann_input = lstm_output[:, -1, :]             # Shape: (batch, hidden_dims)
+        ann_output = self.ann(ann_input).squeeze(-1)  # Shape: (batch, )
+        frame_probs = torch.sigmoid(ann_output)       # Shape: (batch, )
 
         # The outputs indicate the probability of each frame requiring enhancement
         # for each audio file in the batch
-        return frame_probs.squeeze(-1)
+        return frame_probs

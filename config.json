@@ -82,10 +82,10 @@
 
   "trainer": {
     "epochs": 200,
-    "validation_interval": 5,
+    "validation_interval": 1,
 
     "save_dir": "pretrained/",
-    "save_period": 2,
+    "save_period": 2000,
 
     "tensorboard": false,
     "log_dir": "logs/"

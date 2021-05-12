@@ -5,14 +5,18 @@ import torch
 class PreprocessAudio:
     """ Preprocessing class for preparing the data for training """
 
-    def __init__(self, window_len, stride_len, threshold, transform_func):
+    def __init__(self, window_len, stride_len, threshold, transform_func, device):
         self.window_len = window_len
         self.stride_len = stride_len
         self.threshold = threshold
-        self.transform_func = transform_func
+        self.transform_func = transform_func.to(device)
+        self.device = device
 
     def preprocess(self, clean_tensor, noisy_tensor):
         """ Splits the tensors into frames and computes the targets using SNR estimator """
+
+        clean_tensor = clean_tensor.to(self.device)
+        noisy_tensor = noisy_tensor.to(self.device)
 
         # Note that we might miss some values because of stride_len
         # But that will not matter much, as the maximum we can lose is (stride_len-1) samples

@@ -18,6 +18,8 @@ class LSTM_Wrapper(models.base.BaseModel):
         Target shape: (n_frames, )
         """
 
+        self.model.train()
+
         # Split into batches for efficiency, without loosing much information
         # We can exploit the monotonic property of frames, i.e. they only depend
         # on only the preceding frame
@@ -27,7 +29,7 @@ class LSTM_Wrapper(models.base.BaseModel):
         target = target.to(self.device)
         data = data_new.to(self.device)
 
-        output_probs = self.model(data).squeeze(0)  # Remove the batch dimension after getting the output
+        output_probs = self.model(data)
 
         loss = self.loss_fn(output_probs, target)
         self.optimizer.zero_grad()
@@ -46,13 +48,13 @@ class LSTM_Wrapper(models.base.BaseModel):
             0: Frame doesn't require enhancement
             1: Frame requires enhancement
         """
-        data = data.to(self.device)
+        self.model.eval()
         with torch.no_grad():
-            data = data.unsqueeze(0)  # Insert batch dimension which is required
-            output_probs = self.model(data).squeeze(0)  # Remove the batch dimension after getting the output
+            data = self._prepare_batch(data).to(self.device)
+            output_probs = self.model(data)
             pred_labels = torch.where(output_probs >= 0.5, 1, 0)
 
-        return pred_labels
+        return pred_labels.cpu()
 
     def _prepare_batch(self, data):
         """
@@ -68,12 +70,12 @@ class LSTM_Wrapper(models.base.BaseModel):
         # Now build the padding required for the first few samples (T-1 of them)
         for i in reversed(range(seq_length - 1)):
             n_pads = seq_length - i - 1
-            zeros = torch.zeros(n_pads, data.shape[-1])
-            seq_i = torch.vstack([zeros, data[:i + 1]])
+            zeros = torch.zeros(n_pads, data.shape[-1]).to(self.device)
+            seq_i = torch.vstack([zeros, data[:i + 1]]).to(self.device)
 
             # Need to add a dimension because data_new is of shape (batch, seq_len, n_features)
             # and seq_i is of shape (seq_len, n_features). Also need to add at the top because
             # these are the first samples
-            data_new = torch.vstack([seq_i.unsqueeze(0), data_new])
+            data_new = torch.vstack([seq_i.unsqueeze(0), data_new]).to(self.device)
 
         return data_new
