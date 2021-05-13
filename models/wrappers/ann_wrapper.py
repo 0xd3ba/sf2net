@@ -46,4 +46,4 @@ class ANN_Wrapper(models.base.BaseModel):
             output_probs = torch.sigmoid(output_scores)
             pred_labels = torch.where(output_probs >= 0.5, 1, 0)
 
-        return pred_labels.cpu()
+        return pred_labels, output_probs

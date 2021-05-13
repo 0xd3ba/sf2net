@@ -54,7 +54,7 @@ class LSTM_Wrapper(models.base.BaseModel):
             output_probs = self.model(data)
             pred_labels = torch.where(output_probs >= 0.5, 1, 0)
 
-        return pred_labels.cpu()
+        return pred_labels, output_probs
 
     def _prepare_batch(self, data):
         """

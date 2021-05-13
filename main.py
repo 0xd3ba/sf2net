@@ -45,6 +45,8 @@ def start(config, model, start_mode, model_path, device):
     # Could not find a nice and a clean way to generalize this, so need to manually
     # change depending on the transform
     ip_dim = transform.n_mfcc
+    window_size = transform.MelSpectrogram.n_fft
+    window_stride = transform.MelSpectrogram.hop_length
     # *******************************************************************************
 
     # Prepare the dataset accordingly
@@ -57,6 +59,8 @@ def start(config, model, start_mode, model_path, device):
                         model_path=model_path,
                         transform=transform,
                         threshold=TRANSFORM_DIFF_THRESHOLD,
+                        window_size=window_size,
+                        window_stride=window_stride,
                         **config.get_tester_params())
         tester.start()
 
@@ -71,6 +75,8 @@ def start(config, model, start_mode, model_path, device):
                           model=model,
                           transform=transform,
                           threshold=TRANSFORM_DIFF_THRESHOLD,
+                          window_size=window_size,
+                          window_stride=window_stride,
                           **config.get_trainer_params())
         trainer.start()
 

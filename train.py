@@ -14,6 +14,8 @@ class Trainer:
                  model,                     # The model to use for training
                  transform,                 # The transformation function to apply on inputs
                  threshold,                 # The threshold for setting up target labels
+                 window_size,               # The size of the frame window
+                 window_stride,             # The amount of strides
                  epochs,                    # Number of epochs to train the model
                  validation_interval,       # Validation interval
                  save_dir,                  # Where to save the models
@@ -34,8 +36,8 @@ class Trainer:
         self.use_tensorboard = tensorboard
         self.tensorboard_log_dir = log_dir
 
-        self.prepare_data = preprocess.PreprocessAudio(window_len=transform.MelSpectrogram.n_fft,
-                                                       stride_len=transform.MelSpectrogram.hop_length,
+        self.prepare_data = preprocess.PreprocessAudio(window_len=window_size,
+                                                       stride_len=window_stride,
                                                        threshold=threshold,
                                                        transform_func=transform,
                                                        device=self.model.device)

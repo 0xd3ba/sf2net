@@ -83,4 +83,4 @@ class REINFORCE_Wrapper(models.base.BaseModel):
         action_probs = F.softmax(action_scores, dim=-1)  # Shape: (n_frames, n_actions)
         actions = action_probs.argmax(dim=-1)            # Greedily return the action with highest probability
 
-        return actions
+        return actions, action_probs

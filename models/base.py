@@ -25,8 +25,8 @@ class BaseModel:
         """ Performs a validation on the given dataset
         """
         target = target.to(self.device)
-        labels = self.predict(data).to(self.device)
-        n_correct = torch.where(labels == target, 1.0, 0.0)
+        labels, _ = self.predict(data)
+        n_correct = torch.where(labels.to(self.device) == target, 1.0, 0.0)
         return n_correct.mean().cpu().item()
 
     def log(self, log_dir):

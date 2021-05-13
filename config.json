@@ -85,7 +85,7 @@
     "validation_interval": 1,
 
     "save_dir": "pretrained/",
-    "save_period": 2000,
+    "save_period": 5,
 
     "tensorboard": false,
     "log_dir": "logs/"
