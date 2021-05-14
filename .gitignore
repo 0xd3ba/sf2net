@@ -1,8 +1,8 @@
 # MacOS
 .DS_Store
 
-# Dataset -- No need to push it, for now
-data/
+# Pretrained -- No need to push it, for now
+pretrained/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
