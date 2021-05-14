@@ -49,6 +49,7 @@ Make sure all the files are put appropriately inside `data` directory (Have incl
 (Recommended that a virtual environment is set up before proceeding further)
 
 - Install the dependencies by doing `pip3 install requirement.txt`
+- Make sure the dataset directory is exactly structured as mentioned above. In case of missing directories, create them.
 - *(Optional)* Change the parameters in `config.json` file (model hyper-parameters, optimizer, epochs ... etc. )
 - *(Optional)* Change the model that will be used and whether to train/test that model in `start.sh` script
 - Execute `start.sh`
